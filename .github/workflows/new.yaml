@@ -1,7 +1,7 @@
 on:
   pull_request
 jobs:
-  TruffleHog:
+  lox:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
