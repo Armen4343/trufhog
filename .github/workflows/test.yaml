@@ -19,4 +19,4 @@ jobs:
       continue-on-error: true 
       with: 
         path: .
-        extra_args: --debug --only-verified
+        extra_args: --debug --only-verified --json
