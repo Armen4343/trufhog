@@ -17,4 +17,4 @@ jobs:
       continue-on-error: true 
       with: 
         path: .
-        extra_args: --debug --only-verified --branch 'refs/heads/*'
+        extra_args: --debug --only-verified
