@@ -12,9 +12,9 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    - name: TruffleHog OSS 
-      id: trufflehog 
+    - name: TruffleHog OSS
       uses: trufflesecurity/trufflehog@main
       continue-on-error: true 
       with: 
-        extra_args: --debug --only-verified ﻿
+        path: .
+        extra_args: --debug --only-verified --branch 'refs/heads/*'
