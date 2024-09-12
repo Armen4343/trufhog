@@ -8,6 +8,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+    - name: x
+      run: touch trufflehog_output.txt
     - name: Checkout code
       uses: actions/checkout@v4
       with:
