@@ -21,9 +21,20 @@ jobs:
       - name: Run trufflehog
         run: |
           trufflehog git --repo $(pwd) > output/issue.txt || true
-          cat output/issue.txt | sed 's/\x1b\[[0-9;]*m//g' |
-            grep -E 'Reason|Date|Hash|Filepath|Branch|Commit' |
-            sed 's/^[[:space:]]*//' | awk 'ORS=NR%6?"\n":"\n\n"' > output/filtered_issue.txt
+          cat output/issue.txt | sed 's/\x1b\[[0-9;]*m//g' | grep -E 'Reason|Date|Hash|Filepath|Branch|Commit' | sed 's/^[[:space:]]*//' | awk '{
+              if ($1 == "Branch:") {
+                  branch = $2; 
+                  gsub("origin/", "", branch);  # Remove "origin/" prefix for file naming
+                  file = "output/" branch ".txt";  # Create a filename based on the branch name
+                  print "";  # Start new entry
+              }
+              print > file;  # Redirect to the appropriate file
+          }'
+        #run: |
+        #  trufflehog git --repo $(pwd) > output/issue.txt || true
+        #  cat output/issue.txt | sed 's/\x1b\[[0-9;]*m//g' |
+        #    grep -E 'Reason|Date|Hash|Filepath|Branch|Commit' |
+        #    sed 's/^[[:space:]]*//' | awk 'ORS=NR%6?"\n":"\n\n"' > output/filtered_issue.txt
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
