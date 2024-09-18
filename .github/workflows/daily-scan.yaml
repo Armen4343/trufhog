@@ -23,21 +23,19 @@ jobs:
           trufflehog git --repo $(pwd) > output/issue.txt || true
           cat output/issue.txt | sed 's/\x1b\[[0-9;]*m//g' | grep -E 'Reason|Date|Hash|Filepath|Branch|Commit' | sed 's/^[[:space:]]*//' | awk '{
               if ($1 == "Branch:") {
+                  if (file) { print "" > file; }  # Add a newline before a new entry if file is set
                   branch = $2; 
                   gsub("origin/", "", branch);  # Remove "origin/" prefix for file naming
-                  
-                  # Check if branch is not empty
                   if (branch != "") {
                       file = "output/" branch ".txt";  # Create a filename based on the branch name
-                      print "";  # Start new entry with a newline
                   }
               }
               if (file) {
                   print > file;  # Redirect to the appropriate file only if file is valid
               }
-              if (NR > 1 && $1 == "Commit:") {  # After each commit, add a newline
-                  print "" > file;
-              }
+          }
+          END {
+              if (file) { print "" > file; }  # Ensure a newline at the end of the last entry
           }'
         #run: |
         #  trufflehog git --repo $(pwd) > output/issue.txt || true
