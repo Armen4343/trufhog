@@ -25,10 +25,16 @@ jobs:
               if ($1 == "Branch:") {
                   branch = $2; 
                   gsub("origin/", "", branch);  # Remove "origin/" prefix for file naming
-                  file = "output/" branch ".txt";  # Create a filename based on the branch name
-                  print "";  # Start new entry
+                  
+                  # Check if branch is not empty
+                  if (branch != "") {
+                      file = "output/" branch ".txt";  # Create a filename based on the branch name
+                      print "";  # Start new entry
+                  }
               }
-              print > file;  # Redirect to the appropriate file
+              if (file) {
+                  print > file;  # Redirect to the appropriate file only if file is valid
+              }
           }'
         #run: |
         #  trufflehog git --repo $(pwd) > output/issue.txt || true
