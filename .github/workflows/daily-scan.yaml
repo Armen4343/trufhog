@@ -1,8 +1,9 @@
-name: daily-scan
+name: Daily Entire Repo Secret Scan
+
 on:
-  push:
-    branches:
-      - main
+  schedule:
+    - cron: '0 0 * * *'
+    
 jobs:
   trufflehog:
     runs-on: ubuntu-latest
@@ -23,28 +24,23 @@ jobs:
           trufflehog git --repo $(pwd) > output/issue.txt || true
           cat output/issue.txt | sed 's/\x1b\[[0-9;]*m//g' | grep -E 'Reason|Date|Hash|Filepath|Branch|Commit' | sed 's/^[[:space:]]*//' | awk '{
               if ($1 == "Branch:") {
-                  if (file) { print "" > file; }  # Add a newline before a new entry if file is set
+                  if (file) { print "" > file; }
                   branch = $2; 
-                  gsub("origin/", "", branch);  # Remove "origin/" prefix for file naming
+                  gsub("origin/", "", branch); 
                   if (branch != "") {
-                      file = "output/" branch ".txt";  # Create a filename based on the branch name
+                      file = "output/" branch ".txt"; 
                   }
               }
               if (file) {
-                  print > file;  # Redirect to the appropriate file only if file is valid
+                  print > file; 
               }
           }
           END {
-              if (file) { print "" > file; }  # Ensure a newline at the end of the last entry
+              if (file) { print "" > file; }
           }'
-        #run: |
-        #  trufflehog git --repo $(pwd) > output/issue.txt || true
-        #  cat output/issue.txt | sed 's/\x1b\[[0-9;]*m//g' |
-        #    grep -E 'Reason|Date|Hash|Filepath|Branch|Commit' |
-        #    sed 's/^[[:space:]]*//' | awk 'ORS=NR%6?"\n":"\n\n"' > output/filtered_issue.txt
-
+      
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: my-artifact
-          path: output/  #filtered_issue.txt
+          path: output/
