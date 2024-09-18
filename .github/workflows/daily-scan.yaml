@@ -29,11 +29,14 @@ jobs:
                   # Check if branch is not empty
                   if (branch != "") {
                       file = "output/" branch ".txt";  # Create a filename based on the branch name
-                      print "";  # Start new entry
+                      print "";  # Start new entry with a newline
                   }
               }
               if (file) {
                   print > file;  # Redirect to the appropriate file only if file is valid
+              }
+              if (NR > 1 && $1 == "Commit:") {  # After each commit, add a newline
+                  print "" > file;
               }
           }'
         #run: |
