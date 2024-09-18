@@ -24,7 +24,7 @@ jobs:
           trufflehog git --repo $(pwd) > output/issue.txt || true
           cat output/issue.txt | grep -E 'Reason|Date|Hash|Filepath|Branch|Commit|@@' | sed 's/^[[:space:]]*//;s/^@@/@@ -0,0 +1,/' > output/filtered_issue.txt
           cat output/issue.txt | sed 's/\x1b\[[0-9;]*m//g' | grep -E 'Reason|Date|Hash|Filepath|Branch|Commit' | sed 's/^[[:space:]]*//;s/^@@/@@ -0,0 +1/' > output/filtered_issue2.txt
-          cat output/issue.txt | sed 's/\x1b\[[0-9;]*m//g' | grep -E 'Reason|Date|Hash|Filepath|Branch|Commit' | sed 's/^[[:space:]]*//' | awk 'BEGIN{RS=""; ORS="\n\n"} {print}' > output/filtered_issue3.txt
+          cat output/issue.txt | sed 's/\x1b\[[0-9;]*m//g' | grep -E 'Reason|Date|Hash|Filepath|Branch|Commit' | sed 's/^[[:space:]]*//' | awk 'ORS=NR%6?"\n":"\n\n"' > output/filtered_issue3.txt
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
