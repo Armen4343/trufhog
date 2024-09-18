@@ -1,0 +1,32 @@
+name: daily-scan
+on:
+  push:
+    branches:
+      - main
+jobs:
+  trufflehog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+
+      - name: Install trufflehog
+        run: |
+          pip install truffleHog
+          
+      - name: Create Directory and File
+        run: |
+          mkdir -p output
+          touch output/issue.txt
+        
+      - name: Run trufflehog
+        run: |
+          trufflehog git --repo $(pwd) > output/issue.txt || true
+          cat output/issue.txt | grep -E 'Reason|Date|Hash|Filepath|Branch|Commit|@@' | sed 's/^[[:space:]]*//;s/^@@/@@ -0,0 +1,/' 
+          cat output/issue.txt
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: my-artifact
+          path: output/
